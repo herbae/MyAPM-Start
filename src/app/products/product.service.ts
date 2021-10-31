@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, merge, Observable, Subject, throwError } from 'rxjs';
-import { catchError, map, scan } from 'rxjs/operators';
+import { catchError, map, scan, shareReplay } from 'rxjs/operators';
 import { SupplierService } from '../suppliers/supplier.service';
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -31,7 +31,8 @@ export class ProductService {
         category: categories.find(c => product.categoryId === c.id).name,
         searchKey: [product.productName]
       }) as Product)
-    )
+    ),
+    shareReplay(1)
   );
 
   private productSelectedSubject = new BehaviorSubject<number>(0);
@@ -44,7 +45,8 @@ export class ProductService {
     .pipe(
       map(([products, selectedId]) =>
         products.find(pr => pr.id === selectedId)
-      )
+      ),
+      shareReplay(1)
     )
 
   private productInsertedSubject = new Subject<Product>();
