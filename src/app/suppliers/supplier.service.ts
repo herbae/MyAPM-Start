@@ -1,13 +1,21 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError, shareReplay } from 'rxjs/operators';
+import { Supplier } from './supplier';
 
-import { throwError, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
+
+  suppliers$ = this.http.get<Supplier[]>(this.suppliersUrl)
+    .pipe(
+      shareReplay(1),
+      catchError(this.handleError)
+    )
 
   constructor(private http: HttpClient) { }
 
